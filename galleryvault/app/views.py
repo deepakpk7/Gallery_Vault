@@ -7,7 +7,13 @@ from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.conf import settings
 
+from django.http import HttpResponse
+
+
 # Create your views here.
+# username:demo@gmail.com
+# password:demo
+
 def user_login(req):
     if 'user' in req.session:
         return redirect(index)
@@ -47,6 +53,27 @@ def register(req):
     else:
         return render(req,'register.html')
     
-    
 def index(req):
-    return render(req,"index.html")
+    if 'user' in req.session:
+        data=UploadedFile.objects.all()
+        return render(req,'index.html',{'file':data})
+    else:
+        return redirect(user_login)
+    
+def upload(req):
+    if 'user' in req.session:
+        print(req.FILES)  
+        if 'imges' in req.FILES:
+            img=req.FILES['imges']
+            data=UploadedFile.objects.create(file=img)
+            data.save()
+        else:
+            print("File key 'imges' not found in req.FILES")
+    return render(req, "index.html")
+
+
+
+def user_logout(req):
+    logout(req)
+    req.session.flush() #Delete session
+    return redirect(user_login)
