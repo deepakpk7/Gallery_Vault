@@ -69,9 +69,13 @@ def upload(req):
             data.save()
         else:
             print("File key 'imges' not found in req.FILES")
-    return render(req, "index.html")
+    return render(req, "upload.html")
 
-
+def file_delete(req,pid):
+    if 'user' in req.session:
+        data=UploadedFile.objects.filter(pk=pid)
+        data.delete()
+        return redirect(index)
 
 def user_logout(req):
     logout(req)
